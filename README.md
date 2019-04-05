@@ -15,15 +15,10 @@ $ cd CORE19-10_quiz_tips  ## Entrar en el directorio de trabajo del programa de 
 $
 $ npm install  ## Instala el programa de test, que es un paquete npm
 $
-$ npm run checks [nombre de la práctica] [nombre_del_usuario]     ## Pasa los tests sobre el repositorio en github
+$ npm run checks  ## Pasa los tests sobre el repositorio en github
 ......................................... ## indicando que partes  están correctamente
 ......................................... ## implementadas y cuales no.
 ... (resultado de los tests)
-$
-$ ## Cuando el resultado de los tests locales sea satisfactorio, puede subir su nota al servidor
-$ ## para su inclusión en Moodle con el comando:
-$ npm run upload
-$ 
 ```
 
 Los tests pueden pasarse tantas veces como sea necesario; incluso con el ejercicio incompleto.
