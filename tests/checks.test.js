@@ -63,7 +63,8 @@ describe("CORE19-10_quiz_tips", function () {
                 error_critical = this.msg_err;
             }
             json_ok.should.be.equal(true);
-        }});
+        }
+    });
 
     it('', async function () {
         this.name = `3(Precheck): Checking the 'package.json' file format...`;
@@ -85,7 +86,8 @@ describe("CORE19-10_quiz_tips", function () {
                 error_critical = this.msg_err;
             }
             is_json.should.be.equal(true);
-        }});
+        }
+    });
 
     it('', async function () {
         const expected = "npm install";
@@ -120,7 +122,10 @@ describe("CORE19-10_quiz_tips", function () {
             this.msg_ok = "'quizzes.sqlite' replaced successfully";
             this.msg_err = "Error replacing 'quizzes.sqlite'";
             let error_deps;
-            try {fs.copySync(quizzes_orig, quizzes_back, {"overwrite": true});} catch (e){}
+            try {
+                fs.copySync(quizzes_orig, quizzes_back, {"overwrite": true});
+            } catch (e) {
+            }
             [error_deps, _] = await to(fs.copy(quizzes_test, quizzes_orig, {"overwrite": true}));
             if (error_deps) {
                 this.msg_err = "Error copying the answers file: " + error_deps;
@@ -154,7 +159,7 @@ describe("CORE19-10_quiz_tips", function () {
             }
             error_launch.should.be.equal("");
         }
-        });
+    });
 
     it('', async function () {
         const expected = url;
@@ -197,7 +202,7 @@ describe("CORE19-10_quiz_tips", function () {
     });
 
     it('', async function () {
-        const expected = url+'/quizzes/randomplay';
+        const expected = url + '/quizzes/randomplay';
         this.name = `9: Checking that the server responds at ${expected}...`;
         this.score = 1;
         if (error_critical) {
@@ -213,26 +218,97 @@ describe("CORE19-10_quiz_tips", function () {
     });
 
     it('', async function () {
-        const expected = '0';
-        let url = url+'/quizzes/randomplay';
-        this.name = `9: Checking the initial score '${expected}' at ${url}...`;
+        const expected = 'Anonymous';
+        let url = url + '/quizzes/1';
+        this.name = `10: Checking that the server shows the anonymous user...`;
         this.score = 1;
         if (error_critical) {
             this.msg_err = error_critical;
             should.not.exist(error_critical);
         } else {
-            this.msg_ok = `Found the initial score '${expected}' at ${url}`;
+            this.msg_ok = `Found the anonymous user '${expected}' at ${url}`;
             let error_nav;
             [error_nav, resp] = await to(browser.visit(url));
             this.msg_err = `Server not responding at ${url}\n\t\tError:${error_nav}\n\t\tReceived:${browser.text('body')}`;
             should.not.exist(error_nav);
-            this.msg_err = `The initial score '${expected}' has not been found at ${url}\n\t\tReceived:${browser.text('body')}`;
+            this.msg_err = `Anonymous user not found at ${url}\n\t\tReceived:${browser.text('body')}`;
             Utils.search(expected, browser.text('body')).should.be.equal(true);
         }
     });
 
     it('', async function () {
-        let url = url+'/randomcheck/1?answer=NOK';
+        const expected = 'registrado';
+        let url = url + '/quizzes/5';
+        this.name = `11: Checking that the server shows the registered user...`;
+        this.score = 1;
+        if (error_critical) {
+            this.msg_err = error_critical;
+            should.not.exist(error_critical);
+        } else {
+            this.msg_ok = `Found the registered user '${expected}' at ${url}`;
+            let error_nav;
+            [error_nav, resp] = await to(browser.visit(url));
+            this.msg_err = `Server not responding at ${url}\n\t\tError:${error_nav}\n\t\tReceived:${browser.text('body')}`;
+            should.not.exist(error_nav);
+            this.msg_err = `Registered user not found at ${url}\n\t\tReceived:${browser.text('body')}`;
+            Utils.search(expected, browser.text('body')).should.be.equal(true);
+        }
+    });
+
+    it('', async function () {
+        const expected = 'meaning';
+        const user = 'registrado';
+        let url_login = url + "/session";
+        let url = url + '/quizzes/5';
+        this.name = `12: Checking that the server shows clues to the registered user...`;
+        this.score = 1;
+        if (error_critical) {
+            this.msg_err = error_critical;
+            should.not.exist(error_critical);
+        } else {
+            this.msg_ok = `Found clues for the registered user '${user}' at ${url}`;
+            let error_nav;
+            [error_nav, resp] = await to(browser.visit(url_login));
+            this.msg_err = `Could not open login url '${url_login}'\n\t\t\tError: >>${error_nav}`;
+            [error_nav, resp] = await to(browser.assert.element('input[id=login]'));
+            this.msg_err = `Could not find login input at '${url_login}'\n\t\t\tError: >>${error_nav}`;
+            [error_nav, resp] = await to(browser.assert.element('input[id=password]'));
+            this.msg_err = `Could not find login password at '${url_login}'\n\t\t\tError: >>${error_nav}`;
+            [error_nav, resp] = await to(browser.fill('input[id=login]', user));
+            this.msg_err = `Could not fill login input at '${url_login}'\n\t\t\tError: >>${error_nav}`;
+            [error_nav, resp] = await to(browser.fill('input[id=password]', user));
+            this.msg_err = `Could not fill login password at '${url_login}'\n\t\t\tError: >>${error_nav}`;
+            [error_nav, resp] = await to(browser.pressButton("[name=commit]"));
+            this.msg_err = `Could not send login form at '${url_login}'\n\t\t\tError: >>${error_nav}`;
+            [error_nav, resp] = await to(browser.visit(url));
+            this.msg_err = `Server not responding at ${url}\n\t\tError:${error_nav}\n\t\tReceived:${browser.text('body')}`;
+            should.not.exist(error_nav);
+            this.msg_err = `Clues for the registered user not found at ${url}\n\t\tReceived:${browser.text('body')}`;
+            Utils.search(expected, browser.text('body')).should.be.equal(true);
+        }
+    });
+
+    it('', async function () {
+        const expected = 'registrado';
+        let url = url + '/quizzes/5';
+        this.name = `13: Checking that the server shows the registered user in the clues...`;
+        this.score = 1;
+        if (error_critical) {
+            this.msg_err = error_critical;
+            should.not.exist(error_critical);
+        } else {
+            this.msg_ok = `Found the registered user '${expected}' in the clues  at ${url}`;
+            let error_nav;
+            [error_nav, resp] = await to(browser.visit(url));
+            this.msg_err = `Server not responding at ${url}\n\t\tError:${error_nav}\n\t\tReceived:${browser.text('body')}`;
+            should.not.exist(error_nav);
+            this.msg_err = `Registered user not found in the clues at ${url}\n\t\tReceived:${browser.text('body')}`;
+            Utils.search(expected, browser.text('body')).should.be.equal(true);
+        }
+    });
+
+    it('', async function () {
+        let url = url + '/quizzes/randomcheck/1?answer=NOK';
         this.name = `10: Checking that the server accepts wrong answers at ${url}...`;
         this.score = 1;
         if (error_critical) {
@@ -250,9 +326,9 @@ describe("CORE19-10_quiz_tips", function () {
 
     it('', async function () {
         const expected = '0';
-        let url = url+'/randomcheck/1?answer=NOK';
+        let url = url + '/quizzes/randomcheck/1?answer=NOK';
         this.name = `11: Checking the score at ${url}...`;
-        this.score = 2;
+        this.score = 1;
         if (error_critical) {
             this.msg_err = error_critical;
             should.not.exist(error_critical);
@@ -267,7 +343,7 @@ describe("CORE19-10_quiz_tips", function () {
     });
 
     it('', async function () {
-        let url = url+'/randomcheck/1?answer=OK';
+        let url = url + '/randomcheck/1?answer=OK';
         this.name = `12: Checking that the server accepts right answers at ${url}...`;
         this.score = 1;
         if (error_critical) {
@@ -285,7 +361,7 @@ describe("CORE19-10_quiz_tips", function () {
 
     it('', async function () {
         const expected = '1';
-        let url = url+'/randomcheck/1?answer=OK';
+        let url = url + '/randomcheck/1?answer=OK';
         this.name = `13: Checking the score at ${url}...`;
         this.score = 2;
         if (error_critical) {
@@ -307,7 +383,10 @@ describe("CORE19-10_quiz_tips", function () {
             server.kill();
             await timeout(T_WAIT * 1000);
         }
-        try {fs.copySync(quizzes_back, quizzes_orig, {"overwrite": true});} catch (e){}
+        try {
+            fs.copySync(quizzes_back, quizzes_orig, {"overwrite": true});
+        } catch (e) {
+        }
     });
 
 });
