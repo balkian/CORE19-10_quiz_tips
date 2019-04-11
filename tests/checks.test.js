@@ -214,7 +214,7 @@ describe("CORE19-10_quiz_tips", function () {
 
     it('', async function () {
         const expected = '0';
-        let url = url+'/randomplay';
+        let url = url+'/quizzes/randomplay';
         this.name = `9: Checking the initial score '${expected}' at ${url}...`;
         this.score = 1;
         if (error_critical) {
