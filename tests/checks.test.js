@@ -148,9 +148,6 @@ describe("CORE19-10_quiz_tips", function () {
             server.on('error', function (data) {
                 error_launch += data
             });
-            server.stderr.on('data', function (data) {
-                error_launch += data
-            });
             await to(timeout(T_WAIT * 1000));
             this.msg_err = `Error launching '${expected}'<<\n\t\t\tReceived: ${error_launch}`;
             if (error_launch.length) {
