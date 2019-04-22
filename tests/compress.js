@@ -9,5 +9,5 @@ const output = fs.createWriteStream(dest);
 const archive = archiver('zip', {zlib: { level: 9 } /* Sets the compression level.*/});
 
 archive.pipe(output);
-archive.glob(`${orig}/*`, {"ignore": ['node_modules', 'tests', 'README.md', 'LICENSE']});
+archive.glob(`**`, {"cwd": orig, "ignore": ["node_modules/**"]});
 archive.finalize();
