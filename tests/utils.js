@@ -4,6 +4,7 @@
 
 const _ = require("underscore");
 const Utils = {};
+const Browser = require('zombie');
 
 const REG_URL = /(\b(http|ftp|https|ftps):\/\/[-A-ZáéíóúÁÉÍÓÚ0-9+&@#\/%?=~_|!:,.;]*[-A-ZáéíóúÁÉÍÓÚ0-9+&@#\/%=~_|])/ig;
 
@@ -82,5 +83,49 @@ Utils.search = (b, a) => {
         }
     }
 };
+
+
+Utils.wrap = async function(promise, msg){
+    return promise
+        .then(data => {return data})
+        .catch(err => {throw new Error(`${msg}`)});
+}
+
+Utils.assert_in_url = async function(expected, url, msg, browser) {
+    let error_nav;
+    browser = await Utils.assert_up(url, browser);
+    msg = `${msg}\n\tExpected: ${expected}\n\tFound: '${browser.text('body')}'\n`;
+    if(!Utils.search(expected, browser.text('body'))) {
+        throw new Error(msg)
+    }
+}
+
+Utils.assert_up = async function(url, browser) {
+    if (typeof(browser) === 'undefined') {
+        browser = new Browser();
+    }
+    let err
+    [err, resp] = await Utils.to(browser.visit(url));
+    if(err || !browser.success) {
+        Utils.debug(`\n\tRequesting: ${url}\n\tResponse: ${browser.text()}\n\tStatus code: ${browser.statusCode}`);
+        err = new Error(`Could not visit ${url} Status: ${browser.statusCode}`);
+        throw err
+    }
+    return browser;
+}
+
+Utils.to = function(promise) {
+    return promise
+        .then(data => {
+            return [null, data];
+        })
+        .catch(err => [err]);
+};
+
+Utils.debug = () => {}
+
+if(process.env.DEBUG) {
+    Utils.debug = console.log.bind(null, "DEBUG: ");
+}
 
 module.exports = Utils;
